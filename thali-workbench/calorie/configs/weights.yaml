@@ -1,24 +1,3 @@
-# ============================================================================
-# thali-calorie-pipeline :: weights.yaml
-#
-# Central registry of every checkpoint the pipeline needs. Edit the `weights:`
-# paths below to point at YOUR files (relative to the repo root, or absolute).
-#
-# Confirmed mapping (from your actual weights folder):
-#   calorie_clip.pt                          -> calorie_clip.weights
-#   convnext_base_ep018_macro_f1=0.9425.pt   -> classifiers.convnext.weights
-#                                                (384px, drop_rate 0.2 -- your only ConvNeXt checkpoint,
-#                                                 used for both YOLO-crop and standalone classification)
-#   save_best_dino_v2.pth                    -> classifiers.dino.weights
-#   sam2.1_hiera_tiny.pt                     -> sam2.base_checkpoint
-#   sam2_finetuned.pth                       -> sam2.finetuned_checkpoint
-#   yolo_best.pt                             -> yolo.weights
-#
-# Still worth a sanity check: run `python scripts/check_weights.py` after any
-# path change here. If load_state_dict warns about missing/unexpected keys,
-# it's the wrong file for that slot.
-# ============================================================================
-
 device: auto  # auto | cpu | cuda | mps
 
 labels_path: configs/labels.txt

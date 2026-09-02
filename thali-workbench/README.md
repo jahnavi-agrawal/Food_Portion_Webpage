@@ -87,33 +87,3 @@ python scripts/run_batch.py --images images/ --config configs/baseline.yaml
 `configs/baseline.yaml` is the Ashoka tray; `configs/general.yaml` swaps the
 floor-polygon segmenter for direct YOLO detection when there's no known
 compartment layout.
-
-## Things worth knowing
-
-**`calorie_lookup.csv` is simulated.** The per-100g and serving-size figures in
-`calorie/configs/calorie_lookup.csv` cover all 80 classes so the blending path
-works end to end, but they're plausible estimates, not USDA or IFCT figures.
-Swap in real values before trusting any absolute number. Lower
-`calorie_lookup.max_weight` in `weights.yaml` to reduce how much they pull the
-CalorieCLIP output, or set `enabled: false` to ignore them entirely.
-
-**One number, one place.** The tray's 2.5 cm floor-to-rim depth lives only in
-`portion/configs/tray/ashoka.yaml` (`layout.compartment_depth_mm`). `factory.py`
-reads it from there to clamp both the volume estimator and the depth model, so
-don't reintroduce a `max_height_cm` in `baseline.yaml`.
-
-**Classifier preprocessing.** The original `DishDetect.py` used
-`Resize((200, 200))` with no normalization, `weights.yaml` specifies resize 438
-/ crop 384 with ImageNet normalization, and the portion repo's classifier used
-224. Those can't all be right for one checkpoint. The app standardizes on the
-`weights.yaml` values, since that's the documented training config — change
-`RESIZE` / `CROP_SIZE` in `app/models.py` to go back.
-
-**Checkpoint shape.** `DishDetect.py` treated the ConvNeXt file as a pickled
-`nn.Module`; both pipelines treat it as a `state_dict`.
-`app/models.load_dish_classifier` accepts either, and the portion pipeline gets
-its dish names through `app/models.DishNameClassifier` so both tabs share one
-loaded model instead of two.
-
-**First run needs network.** DINOv2 comes from `torch.hub` and Depth Anything V2
-from HuggingFace; both are cached locally afterwards.
