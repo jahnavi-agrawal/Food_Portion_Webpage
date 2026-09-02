@@ -1,0 +1,112 @@
+# ============================================================================
+# thali-calorie-pipeline :: weights.yaml
+#
+# Central registry of every checkpoint the pipeline needs. Edit the `weights:`
+# paths below to point at YOUR files (relative to the repo root, or absolute).
+#
+# Confirmed mapping (from your actual weights folder):
+#   calorie_clip.pt                          -> calorie_clip.weights
+#   convnext_base_ep018_macro_f1=0.9425.pt   -> classifiers.convnext.weights
+#                                                (384px, drop_rate 0.2 -- your only ConvNeXt checkpoint,
+#                                                 used for both YOLO-crop and standalone classification)
+#   save_best_dino_v2.pth                    -> classifiers.dino.weights
+#   sam2.1_hiera_tiny.pt                     -> sam2.base_checkpoint
+#   sam2_finetuned.pth                       -> sam2.finetuned_checkpoint
+#   yolo_best.pt                             -> yolo.weights
+#
+# Still worth a sanity check: run `python scripts/check_weights.py` after any
+# path change here. If load_state_dict warns about missing/unexpected keys,
+# it's the wrong file for that slot.
+# ============================================================================
+
+device: auto  # auto | cpu | cuda | mps
+
+labels_path: configs/labels.txt
+
+yolo:
+  weights: ../models/yolo_best.pt
+  # Detection thresholds (mirrors miscellaneous/predict_thali.py defaults)
+  conf_threshold: 0.03
+  iou_threshold: 0.30
+  agnostic_nms: true
+  max_detections: 8        # hard safety cap after NMS; null = unbounded
+  min_box_px: 20            # skip crops smaller than this on either side (noise)
+  crop_padding_frac: 0.15   # expand each box by this fraction per side before classify/calorie step
+
+classifiers:
+  # Default classifier used for the final dish label (toggle with --classifier)
+  default: dino
+
+  dino:
+    weights: ../models/save_best_dino_v2.pth
+    dino_variant: dinov2_vits14
+    feature_dim: 384
+    hidden_dim: 512
+    # Handles BOTH checkpoint shapes automatically:
+    #  - nn.Sequential-style numeric keys ("0.weight", "1.weight", ...)
+    #  - named backbone./head.-style keys
+    resize: 384
+    crop_size: 336
+
+  convnext:
+    weights: ../models/convnext_base_ep018_macro_f1=0.9425.pt
+    timm_name: convnext_base
+    drop_path_rate: 0.2
+    drop_rate: 0.2
+    resize: 438            # int(384 * 512/448), matches dish_detection/veer_convnext/predict.py
+    crop_size: 384
+
+sam2:
+  base_checkpoint: ../models/sam2.1_hiera_tiny.pt
+  finetuned_checkpoint: ../models/sam2_finetuned.pth   # optional; falls back to base if missing
+  model_cfg: configs/sam2.1/sam2.1_hiera_t.yaml       # Hydra path, resolved by the `sam2` package
+
+calorie_clip:
+  weights: ../models/calorie_clip.pt
+  base_model: ViT-B-32
+  pretrained: openai
+  min_crop_px: 20           # skip calorie estimate on crops smaller than this
+
+calorie_lookup:
+  # Blends CalorieCLIP's raw (label-agnostic) output toward a class-informed
+  # prior, weighted by classifier confidence. See configs/calorie_lookup.csv
+  # -- SIMULATED per-100g values, not from a verified nutrition database.
+  enabled: true
+  path: configs/calorie_lookup.csv
+  max_weight: 0.6   # blend_factor = class_confidence * max_weight; 0 disables blending, 1 = fully trust the lookup at confidence=1.0
+
+  portion_scaling:
+    # Scales each dish's assumed serving size by its box area RELATIVE to
+    # the average box area of every other dish detected in the same thali
+    # (no absolute size reference exists -- camera distance varies per
+    # photo). A dish detected 2x larger than the plate's average dish gets
+    # ~2x the typical_serving_g from the lookup table; half-size gets ~half.
+    # NOTE: this relative-area fallback is only used when tray_profiles.active
+    # is unset/None or doesn't have exactly 6 compartments -- see below.
+    enabled: true
+    min_scale: 0.4   # clip so one bad/small detection can't collapse an estimate to near-zero
+    max_scale: 2.5   # clip so one oversized detection can't dominate the total
+
+tray_profiles:
+  # If `active` names a profile file (without .yaml) in `directory` AND that
+  # profile has exactly 6 compartments, portion scaling uses each dish's
+  # matched compartment's REAL measured floor area (fixed at load time from
+  # the profile's geometry) instead of guessing from box sizes in this one
+  # photo. Any other tray (or active: null) falls back to the relative-area
+  # approach above. Override per-run with --tray-profile on the CLI scripts.
+  directory: configs/tray_profiles
+  active: ashoka_six_compartment_380x280
+
+routing:
+  # auto: try Task 2 (direct) first; fall back to Task 3 (SAM2 -> BEV) if
+  #       direct detection finds fewer than min_direct_detections boxes.
+  # bev_first: always run Task 3 first.
+  # manual: caller must pass task=2 or task=3 explicitly.
+  mode: auto
+  min_direct_detections: 1
+  bev_out_size: [600, 450]   # [width, height] of the warped bird's-eye-view image
+
+output:
+  dir: outputs
+  save_annotated_image: true
+  save_json: true

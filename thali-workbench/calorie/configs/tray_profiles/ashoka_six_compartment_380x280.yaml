@@ -1,0 +1,97 @@
+# Measured Ashoka six-compartment stainless-steel tray profile.
+# All metric values are millimetres. Use this file as the single source of
+# truth for tray-aware calibration; never embed these dimensions in code.
+
+profile:
+  id: ashoka_six_compartment_380x280
+  description: "Six-compartment stainless-steel tray, measured manually"
+  measurement_date: "2026-07-27"
+  measurement_source: "User sketch and empty-tray reference photograph"
+
+outer:
+  width_mm: 380.0
+  height_mm: 280.0
+  corner_radius_mm: null  # Measure if homography/template matching needs it.
+  rim_width_mm: 20.0
+  tray_depth_mm: 25.0
+
+layout:
+  compartment_count: 6
+  inter_compartment_ridge_width_mm: 10.0
+  # The recessed food floor is normally 20 mm in from a compartment lip.
+  # This is per side (40 mm total where both sides are present).
+  food_floor_inset_from_compartment_lip_mm: 20.0
+  # Physical floor-to-rim depth of a compartment: 25 mm = 2.5 cm. This is the
+  # single source of truth for the maximum possible food height in ANY
+  # compartment (liquid or solid) — nothing can physically sit higher than the
+  # compartment wall. `factory.py` reads this value directly and uses it to
+  # clamp both the volume estimator's max_height_cm and the depth model's
+  # metric scale range, so it can never drift out of sync with a duplicated
+  # number in baseline.yaml again. Do not use it as a *default* fill height —
+  # it is a ceiling, not a typical value.
+  compartment_depth_mm: 25.0
+
+calibration:
+  reference_width_mm: 380.0
+  reference_height_mm: 280.0
+  preferred_strategy: known_tray_geometry
+  fallback_strategy: homography
+
+# Measurements that are unambiguous from the supplied sketch. Validate all
+# dimensions before using these as per-compartment homography constraints.
+nominal_compartments:
+  top_left:
+    outer_width_mm: 120.0
+    outer_height_mm: 100.0
+  top_right:
+    outer_width_mm: 100.0
+    outer_height_mm: 100.0
+  centre_bottom:
+    outer_width_mm: 260.0
+    inner_floor_width_mm: 240.0
+    inner_floor_height_mm: 110.0
+  left_bottom:
+    outer_height_mm: 130.0
+  right_bottom:
+    outer_height_mm: 130.0
+
+validation:
+  required_before_metric_compartment_mode:
+    - "Measure every compartment outer width and height with a ruler."
+    - "Measure each flat floor; do not infer it from the inset where walls are sloped."
+    - "Capture one top-down empty-tray image with the complete outer rim visible."
+
+# Coordinates are normalized (x / image width, y / image height) from the
+# supplied 1061 x 673 empty-tray image. They describe only the food floors,
+# which prevents masks from absorbing the steel rim or the surrounding table.
+food_masking:
+  reference_image_path: images/empty_tray.jpg
+  exclude_reference_from_batch: true
+  normalized_floor_polygons:
+    - [[0.180, 0.080], [0.375, 0.085], [0.345, 0.255], [0.165, 0.235]]
+    - [[0.425, 0.085], [0.615, 0.085], [0.650, 0.280], [0.385, 0.275]]
+    - [[0.685, 0.085], [0.865, 0.085], [0.885, 0.250], [0.700, 0.245]]
+    - [[0.145, 0.340], [0.240, 0.360], [0.245, 0.710], [0.105, 0.700]]
+    - [[0.320, 0.385], [0.735, 0.385], [0.705, 0.710], [0.335, 0.710]]
+    - [[0.790, 0.345], [0.890, 0.330], [0.900, 0.710], [0.780, 0.700]]
+  # Detected food masks are grown outward by this many cm before the
+  # coverage/liquid checks and before volume estimation, converted to pixels
+  # per-image using the calibrator's mm_per_pixel. Corrects for masks that
+  # undershoot the true food footprint (thin sauce rims, low-contrast edges)
+  # when the capture angle isn't perfectly top-down. Set to 0.0 to disable.
+  mask_dilation_cm: 1.5
+  liquid:
+    density_g_ml: 1.0
+    min_floor_coverage: 0.72
+    max_gray_std: 42.0
+
+# SAM2-based tray registration (Task 3 / oblique captures). Used instead of
+# the single minAreaRect homography when the capture angle/plane isn't fixed,
+# since a bounding-box-only homography distorts under perspective and throws
+# off which compartment a food mask lands in. See segmentation/sam_tray.py.
+sam_registration:
+  sam2_config: configs/sam2.1/sam2.1_hiera_t.yaml
+  sam2_base_checkpoint: models/sam2.1_hiera_tiny.pt
+  sam2_finetuned_checkpoint: models/sam2_finetuned.pth
+  bev_size: [600, 450]
+  box_prompt_margin_frac: 0.05

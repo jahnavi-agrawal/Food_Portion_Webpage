@@ -1,0 +1,80 @@
+class,calories_per_100g,typical_serving_g,source_note
+aloo gobi,106.18,100,matched: Potato cauliflower (Aloo gobhi)
+aloo methi,135.15,100,matched: Potato fenugreek (Aloo methi)
+aloo mutter,100.92,150,matched: Pea potato curry (Aloo matar)
+aloo paratha,205.04,120,matched: Potato parantha/paratha (Aloo ka parantha/paratha)
+amritsari kulcha,290,100,no match - original kept
+anda curry,117.52,150,matched: Egg curry (Anda curry)
+balushahi,380,50,no match - original kept
+banana chips,665.67,40,matched: Banana chips (Kele ke chips)
+besan laddu,476.91,40,matched: Gram flour ladoo (Besan ladoo)
+bhindi masala,110.81,150,closest match: Okra/Lady's fingers fry (Bhindi sabzi/sabji/subji)
+biryani,190.76,250,closest match: Mutton biryani/biriyani
+boondi laddu,476.91,40,closest match: Gram flour ladoo (Besan ladoo)
+chaas,40,200,no match - original kept
+chana masala,140.68,150,closest match: Black channa curry/Bengal gram curry (Kale chane ki curry)
+chapati,202.31,80,matched: Chapati/Roti
+chicken pizza,146.77,150,closest match: Pizza
+chicken wings,250,120, recipe
+chikki,423.7,40,closest match: Soya chikki
+chivda,400.71,50,closest match: Flattened rice cutlet (Chirwa cutlet/Chivda cutlet/Poha cutlet)
+chole bhature,793.20,500, bhatura
+dabeli,250,100,no match - original kept
+dal khichdi,383.33,200,closest match: Rice dal porridge (Chawal dal ki khichdi/khichri)
+dhokla,216.49,100,matched: Dhokla
+falooda,180,200,no match - original kept
+fish curry,111.13,150,matched: Fish curry (Machli curry)
+gajar ka halwa,172.64,100,matched: Carrot halwa (Gajar ka halwa)
+garlic bread,435.46,80,closest match: Bread roll
+garlic naan,286.45,90,closest match: Naan
+ghevar,400,60,no match - original kept
+grilled sandwich,189.92,120,closest match: Tomato sandwich (grilled)
+gujhia,768.98,70,no match - original kept
+gulab jamun,471.15,50,closest match: Gulab jamun with milk powder
+hara bhara kabab,690.73,100, Vegetable seekh kebab
+idiyappam,120,150,no match - original kept
+idli,137.54,150,matched: Idli
+jalebi,400,50,no match - original kept
+kaju katli,421.74,30,closest match: Cashewnut burfi (Kaju burfi/Kaju katli)
+khakhra,178.50,30,matched: Khakhra
+kheer,120.03,100,closest match: Vermicelli kheer (Semiya/Seviyan ki kheer)
+kulfi,98.43,60,matched: Kulfi
+margherita pizza,146.77,150,closest match: Pizza
+masala dosa,164.58,200,matched: Masala dosa
+masala papad,250,50,no match - original kept
+medu vada,745.5,100,closest match: Plain urad dal vada (Uzunne vada/Minapa garelu/Ulundu vadai/Medu vada)
+misal pav,230.47,250,closest match: Pav bhaji masala
+modak,300,40,no match - original kept
+moong dal halwa,349.80,100,matched: Moong dal halwa
+murukku,480.99,30,original kept
+mysore pak,480,40,no match - original kept
+navratan korma,150.71,150, original kept
+neer dosa,184.53,150,closest match: Masala dosa mixed vegetable fillings
+onion pakoda,551.64,60,closest match: Masala onion pakora/pakoda (Pyaaz ke pakode)
+palak paneer,77.68,150,matched: Spinach paneer (Palak paneer)
+paneer masala,243.12,150,closest match: Masala dosa paneer fillings
+paneer pizza,146.77,150,closest match: Pizza
+pani puri,350,150,no match - original kept
+paniyaram,250,200,no match - original kept
+papdi chaat,460,190, original kept
+patrode,250,140,no match - original kept
+pav bhaji,96.53,250,matched: Pav bhaji
+pepperoni pizza,146.77,150,closest match: Pizza
+phirni,116.12,150,matched: Phirni
+poha,294.53,200,matched: Poha
+pongal,170,200,no match - original kept
+puri bhaji,400,300,no match - original kept
+rajma chawal,140,350, rajma chawal
+rasgulla,118.64,50,matched: Rasgulla
+rava dosa,227.05,150,closest match: Semolina dosa (Suji/Rava dosa)
+sabudana khichdi,187.16,150,matched: Sago khitchdi/khichri (Sabudana khitchdi/khichri)
+sabudana vada,749.89,100,closest match: Peanut sago vada (Sabudana mungfali vada)
+samosa,443.11,60,closest match: Vegetable samosa
+seekh kebab,690.73,100,closest match: Vegetable seekh kebab
+set dosa,297.05,200, original kept
+solkadhi,90,200,no match - original kept
+steamed momo,160,120,no match - original kept
+thali,1000,800,no match - original kept
+thukpa,60,350,no match - original kept
+uttapam,255.95,150,matched: Uttapam
+vada pav,657.57,100,closest match: Fermented bengal gram vada (Khameerikrit/Ufna hua channa dal ka vada)

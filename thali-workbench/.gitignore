@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Checkpoints — keep the folder, not the weights
+models/*
+!models/README.md
+!models/labels.txt
+
+# Generated
+app/.generated/
+calorie/outputs/
+portion/outputs/
+
+.venv/

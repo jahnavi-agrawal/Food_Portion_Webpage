@@ -1,0 +1,21 @@
+# Full stack for the app and both pipelines.
+# SAM2 is not on PyPI — install it separately:
+#   pip install "git+https://github.com/facebookresearch/sam2.git"
+
+streamlit>=1.36
+numpy>=1.24
+opencv-python>=4.8
+PyYAML>=6.0
+pillow>=10.0
+
+# classifiers + detector
+torch>=2.1
+torchvision>=0.16
+timm>=1.0
+ultralytics>=8.3
+
+# CalorieCLIP
+open-clip-torch>=2.24
+
+# Depth Anything V2
+transformers>=4.45

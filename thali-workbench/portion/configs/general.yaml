@@ -1,0 +1,68 @@
+# Config for general thali photos with no fixed compartment pattern or
+# capture angle ("Task 3" style) — no known compartment-floor polygons exist
+# to align against, so this swaps the food segmenter to direct YOLO
+# detection instead of ColorComponentFoodSegmenter's floor-polygon matching.
+#
+# Depth/volume/weight/classification stay identical to baseline.yaml — same
+# calibrated Depth Anything V2 self-calibration, same ConvNeXt dish naming.
+#
+# NOTE on the 2.5 cm ceiling: with no tray profile, there's no measured
+# compartment depth to clamp against, so the default (2.5 cm, same as the
+# Ashoka tray) is used as a generic plate-food-height ceiling. If your
+# general thali uses a different (deeper/shallower) plate, add a
+# `food.tray_profile_path` pointing at a tray-profile YAML with just
+# `layout.compartment_depth_mm` set — it doesn't need the Ashoka-specific
+# `normalized_floor_polygons` section, since yolo_box doesn't use it.
+pipeline:
+  plate_segmenter: contour
+  food_segmenter: yolo_box
+  depth_estimator: depth_anything
+  calibrator: known_geometry
+  volume_estimator: area_height
+  weight_estimator: density
+  food_classifier: yolo_convnext
+
+plate:
+  min_area_fraction: 0.10
+
+food:
+  min_area_px: 500
+  saturation_threshold: 55
+
+calibration:
+  # Round-plate approximation: use the plate's measured diameter for both
+  # dimensions so KnownGeometryCalibrator's mm-per-pixel math still applies.
+  reference_width_mm: 260.0
+  reference_height_mm: 260.0
+  reference_shape: circle
+
+volume:
+  min_height_cm: 0.45
+  area_height_slope: 0.06
+  liquid_fill_height_cm: 1.75
+
+weight:
+  default_density_g_ml: 0.85
+  solid_density_g_ml: 0.85
+  liquid_density_g_ml: 1.0
+  densities_g_ml:
+    liquid: 1.0
+
+depth:
+  model_id: depth-anything/Depth-Anything-V2-Small-hf
+  device: auto
+  min_floor_reference_px: 200
+
+classification:
+  yolo_weights: ../models/yolo_best.pt
+  convnext_weights: ../models/convnext_base_ep018_macro_f1=0.9425.pt
+  labels_path: ../models/labels.txt
+  conf_threshold: 0.10
+  iou_threshold: 0.30
+  device: auto
+
+output:
+  write_json: true
+  write_csv: true
+  write_overlay: true
+  min_label_weight_g: 3.0

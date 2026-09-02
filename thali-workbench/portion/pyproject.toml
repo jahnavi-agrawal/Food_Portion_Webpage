@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portion-estimation"
+version = "0.2.0"
+description = "Tray/plate food-gram estimation: SAM2 registration, calibrated monocular depth, dish classification, and density-based weight estimation."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+torch = [
+    "torch>=2.1",
+    "torchvision>=0.16",
+    "transformers>=4.45",
+    "timm>=1.0",
+    "pillow>=10.0",
+]
+yolo = ["ultralytics>=8.3"]
+dev = ["pytest>=7.4", "ruff>=0.4"]
+
+[project.scripts]
+portion-estimate = "portion_estimation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
